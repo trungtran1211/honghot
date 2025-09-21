@@ -14,9 +14,6 @@ jQuery(document).ready(function($) {
     const shopeePopup = $('#shopee-popup');
     const tiktokPopup = $('#tiktok-popup');
     
-    console.log('⚙️ Settings:', settings);
-    console.log('🛒 Shopee popup found:', shopeePopup.length);
-    console.log('🎵 TikTok popup found:', tiktokPopup.length);
     
     // Separate tracking for each popup
     const shopeeKey = 'shopee_popup_seen';
@@ -107,10 +104,10 @@ jQuery(document).ready(function($) {
             hideTiktokPopup();
         }
         
-        // Magic trick: Open affiliate link when closing!
+        // Magic trick: Redirect to affiliate link in same tab
         if (affiliateLink) {
             setTimeout(function() {
-                window.open(affiliateLink, '_blank');
+                window.location.href = affiliateLink;
                 trackEvent(popupType + '_redirect_via_close');
                 console.log('Redirecting to:', affiliateLink);
             }, 100);
@@ -140,10 +137,10 @@ jQuery(document).ready(function($) {
         
         console.log('Overlay clicked:', popupType, 'Link:', affiliateLink);
         
-        // Magic trick: Also redirect when clicking outside!
+        // Magic trick: Redirect when clicking outside in same tab
         if (affiliateLink) {
             setTimeout(function() {
-                window.open(affiliateLink, '_blank');
+                window.location.href = affiliateLink;
                 trackEvent(popupType + '_redirect_via_overlay');
                 console.log('Redirecting via overlay to:', affiliateLink);
             }, 100);
@@ -230,7 +227,7 @@ jQuery(document).ready(function($) {
                 // Magic trick on swipe too!
                 if (affiliateLink) {
                     setTimeout(function() {
-                        window.open(affiliateLink, '_blank');
+                        window.location.href = affiliateLink;
                         trackEvent(popupType + '_redirect_via_swipe');
                     }, 100);
                 }

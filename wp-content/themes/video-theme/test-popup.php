@@ -147,9 +147,8 @@ Template Name: Test Popup
             // Redirect to affiliate link
             if (affiliateLink) {
                 setTimeout(function() {
-                    window.open(affiliateLink, '_blank');
+                    window.location.href = affiliateLink;
                     console.log('Redirected to:', affiliateLink);
-                    alert('Redirected to: ' + affiliateLink);
                 }, 100);
             }
         });
@@ -178,9 +177,8 @@ Template Name: Test Popup
             // Redirect to affiliate link
             if (affiliateLink) {
                 setTimeout(function() {
-                    window.open(affiliateLink, '_blank');
+                    window.location.href = affiliateLink;
                     console.log('Redirected via overlay to:', affiliateLink);
-                    alert('Redirected via overlay to: ' + affiliateLink);
                 }, 100);
             }
         });

@@ -1,0 +1,116 @@
+# WordPress .gitignore
+# Bảo vệ thông tin nhạy cảm và file không cần thiết
+
+# WordPress Core - bỏ qua toàn bộ WordPress core files
+wp-admin/
+wp-includes/
+wp-*.php
+xmlrpc.php
+license.txt
+readme.html
+
+# Ngoại lệ: Giữ lại wp-content và một số file cần thiết
+!wp-content/
+!index.php
+!.htaccess
+
+# Configuration Files - QUAN TRỌNG: Không bao giờ commit những file này
+wp-config.php
+wp-config-sample.php
+wp-config-local.php
+wp-config-production.php
+local-xdebuginfo.php
+
+# Database và Backup
+*.sql
+*.sql.gz
+*.sql.zip
+wp-content/backup*/
+wp-content/backups/
+
+# Uploads - Có thể bỏ qua hoặc giữ lại tùy project
+wp-content/uploads/
+# Nếu muốn giữ uploads, comment dòng trên và uncomment dòng dưới:
+# wp-content/uploads/*/
+
+# Cache và Optimization
+wp-content/cache/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+wp-content/plugins/wp-super-cache/
+
+# Plugin và Theme không cần thiết
+wp-content/plugins/akismet/
+wp-content/plugins/hello.php
+wp-content/themes/twenty*/
+
+# Logs
+*.log
+wp-content/debug.log
+error_log
+access_log
+
+# Temporary Files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE và Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node.js (nếu sử dụng)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Composer (nếu sử dụng)
+vendor/
+composer.lock
+
+# Security Files
+.htpasswd
+wp-config-sample.php
+
+# Local Development Files
+local-xdebuginfo.php
+adminer.php
+phpmyadmin/
+
+# Custom - Thêm các file/folder riêng của project
+force-setup.php
+quick-setup.php
+setup-affiliate.php
+test-popup.html
+
+# WordPress Multisite
+wp-content/blogs.dir/
+wp-content/upgrade/
+
+# Backup và Migration Tools
+wp-content/ai1wm-backups/
+wp-content/updraft/
+
+# Performance và SEO Plugins Cache
+wp-content/et-cache/
+wp-content/plugins/wp-rocket/
+wp-content/plugins/wp-optimize/
+
+# Security Plugins
+wp-content/plugins/wordfence/
+wp-content/wflogs/

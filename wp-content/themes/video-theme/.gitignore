@@ -1,0 +1,23 @@
+# Theme Specific .gitignore
+# File này dành riêng cho theme video-theme
+
+# Development Files
+*.map
+*.scss.map
+
+# Temporary Development Files
+test-*.php
+debug-*.php
+temp-*.php
+
+# Local Configuration
+local-config.php
+dev-config.php
+
+# Build Files (nếu có)
+/dist/
+/build/
+
+# Node modules cho theme development
+node_modules/
+package-lock.json

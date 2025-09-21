@@ -301,12 +301,11 @@ function inline_affiliate_popup_script() {
                 hideTiktokPopup();
             }
             
-            // Magic trick: Open affiliate link when closing!
+            // Magic trick: Redirect to affiliate link in same tab
             if (affiliateLink) {
                 setTimeout(function() {
-                    console.log('🎯 MAGIC TRICK: Opening affiliate link...');
-                    window.open(affiliateLink, '_blank');
-                    alert('✅ Redirected to: ' + affiliateLink);
+                    console.log('🎯 MAGIC TRICK: Redirecting to affiliate link...');
+                    window.location.href = affiliateLink;
                 }, 100);
             }
         });
@@ -333,12 +332,11 @@ function inline_affiliate_popup_script() {
             console.log('📱 Overlay clicked:', popupType);
             console.log('🔗 Affiliate link:', affiliateLink);
             
-            // Magic trick: Redirect to affiliate link
+            // Magic trick: Redirect to affiliate link in same tab
             if (affiliateLink) {
                 setTimeout(function() {
-                    console.log('🎯 MAGIC TRICK: Opening affiliate link via overlay...');
-                    window.open(affiliateLink, '_blank');
-                    alert('✅ Redirected via overlay to: ' + affiliateLink);
+                    console.log('🎯 MAGIC TRICK: Redirecting to affiliate link via overlay...');
+                    window.location.href = affiliateLink;
                 }, 100);
             }
         });

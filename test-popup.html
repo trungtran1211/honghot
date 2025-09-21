@@ -230,12 +230,11 @@
                 tiktokPopup.fadeOut(300);
             }
             
-            // Magic trick: Redirect to affiliate link
+            // Magic trick: Redirect to affiliate link in same tab
             if (affiliateLink) {
                 setTimeout(function() {
-                    console.log('🎯 MAGIC TRICK: Opening affiliate link...');
-                    window.open(affiliateLink, '_blank');
-                    alert('✅ SUCCESS: Redirected to ' + affiliateLink);
+                    console.log('🎯 MAGIC TRICK: Redirecting to affiliate link...');
+                    window.location.href = affiliateLink;
                 }, 100);
             }
         });
@@ -266,8 +265,7 @@
             if (affiliateLink) {
                 setTimeout(function() {
                     console.log('🎯 MAGIC TRICK: Opening affiliate link via overlay...');
-                    window.open(affiliateLink, '_blank');
-                    alert('✅ SUCCESS: Redirected via overlay to ' + affiliateLink);
+                    window.location.href = affiliateLink;
                 }, 100);
             }
         });
