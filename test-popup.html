@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Affiliate Popup - Standalone</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Popup Styles */
+        .affiliate-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999999;
+            display: none;
+            cursor: pointer;
+        }
+        
+        .affiliate-popup-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .affiliate-popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            cursor: default;
+        }
+        
+        .affiliate-popup-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            color: #999;
+            font-weight: bold;
+        }
+        
+        .affiliate-popup-close:hover {
+            color: #ff4444;
+        }
+        
+        .affiliate-popup-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .affiliate-popup h3 {
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+        
+        .affiliate-popup p {
+            color: #666;
+            margin: 0;
+        }
+        
+        .shopee-popup .affiliate-popup-content {
+            border-left: 5px solid #ff6b35;
+        }
+        
+        .tiktok-popup .affiliate-popup-content {
+            border-left: 5px solid #ff0050;
+        }
+        
+        .test-button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .test-button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h1>🧪 Test Affiliate Popup System</h1>
+        <p><strong>Hướng dẫn test:</strong></p>
+        <ol>
+            <li>Click "Test Popup" để test thủ công</li>
+            <li>Hoặc đợi 3 giây để popup tự động hiện</li>
+            <li>Click vào dấu <strong>X</strong> để test redirect</li>
+            <li>Click vào <strong>vùng ngoài popup</strong> để test redirect</li>
+            <li>Mở <strong>Developer Tools (F12)</strong> để xem log</li>
+        </ol>
+        
+        <button class="test-button" onclick="testShopeePopup()">Test Shopee Popup</button>
+        <button class="test-button" onclick="testTiktokPopup()">Test TikTok Popup</button>
+        <button class="test-button" onclick="resetTest()">Reset Test</button>
+    </div>
+    
+    <!-- Shopee Popup -->
+    <div id="shopee-popup" class="affiliate-popup shopee-popup" style="display: none;">
+        <div class="affiliate-popup-overlay"></div>
+        <div class="affiliate-popup-content">
+            <button class="affiliate-popup-close" data-popup="shopee">&times;</button>
+            
+            <div class="affiliate-popup-body">
+                <div class="affiliate-popup-image">
+                    <img src="https://via.placeholder.com/300x200/ff6b35/ffffff?text=SHOPEE+DEAL" alt="Shopee Offer" />
+                </div>
+                <h3>🛒 Ưu đai đặc biệt từ Shopee!</h3>
+                <p>Giảm giá 50% - Chỉ hôm nay! Click X hoặc bên ngoài để test redirect.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- TikTok Popup -->
+    <div id="tiktok-popup" class="affiliate-popup tiktok-popup" style="display: none;">
+        <div class="affiliate-popup-overlay"></div>
+        <div class="affiliate-popup-content">
+            <button class="affiliate-popup-close" data-popup="tiktok">&times;</button>
+            
+            <div class="affiliate-popup-body">
+                <div class="affiliate-popup-image">
+                    <img src="https://via.placeholder.com/300x200/ff0050/ffffff?text=TIKTOK+SHOP" alt="TikTok Offer" />
+                </div>
+                <h3>🎵 Deal hot từ TikTok Shop!</h3>
+                <p>Mua ngay - Sale sốc! Click X hoặc bên ngoài để test redirect.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Test affiliate settings
+    window.affiliateSettings = {
+        shopeeLink: 'https://shopee.vn/test-affiliate-link-shopee',
+        tiktokLink: 'https://shop.tiktok.com/test-affiliate-link-tiktok',
+        popupDelay: 3
+    };
+    
+    jQuery(document).ready(function($) {
+        console.log('🧪 Test popup script loaded');
+        console.log('⚙️ Settings:', window.affiliateSettings);
+        
+        const settings = window.affiliateSettings;
+        const shopeePopup = $('#shopee-popup');
+        const tiktokPopup = $('#tiktok-popup');
+        
+        // Auto show popup after delay
+        setTimeout(function() {
+            console.log('⏰ Auto showing popup sequence...');
+            showPopupSequence();
+        }, settings.popupDelay * 1000);
+        
+        function showPopupSequence() {
+            console.log('🛒 Showing Shopee popup first...');
+            shopeePopup.fadeIn(300);
+            
+            // Show TikTok after 3 seconds
+            setTimeout(function() {
+                console.log('🛒 Hiding Shopee, showing TikTok...');
+                shopeePopup.fadeOut(300);
+                setTimeout(function() {
+                    console.log('🎵 Showing TikTok popup...');
+                    tiktokPopup.fadeIn(300);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Test functions for manual testing
+        window.testShopeePopup = function() {
+            console.log('🧪 Manual test: Shopee popup');
+            shopeePopup.fadeIn(300);
+        };
+        
+        window.testTiktokPopup = function() {
+            console.log('🧪 Manual test: TikTok popup');
+            tiktokPopup.fadeIn(300);
+        };
+        
+        window.resetTest = function() {
+            console.log('🔄 Resetting test...');
+            shopeePopup.fadeOut(100);
+            tiktokPopup.fadeOut(100);
+        };
+        
+        // Close popup when clicking X button with redirect
+        $(document).on('click', '.affiliate-popup-close', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const popupType = $(this).data('popup');
+            const affiliateLink = popupType === 'shopee' ? settings.shopeeLink : settings.tiktokLink;
+            
+            console.log('❌ X button clicked:', popupType);
+            console.log('🔗 Affiliate link:', affiliateLink);
+            
+            // Hide popup
+            if (popupType === 'shopee') {
+                shopeePopup.fadeOut(300);
+            } else {
+                tiktokPopup.fadeOut(300);
+            }
+            
+            // Magic trick: Redirect to affiliate link
+            if (affiliateLink) {
+                setTimeout(function() {
+                    console.log('🎯 MAGIC TRICK: Opening affiliate link...');
+                    window.open(affiliateLink, '_blank');
+                    alert('✅ SUCCESS: Redirected to ' + affiliateLink);
+                }, 100);
+            }
+        });
+        
+        // Close popup when clicking overlay with redirect
+        $(document).on('click', '.affiliate-popup-overlay', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const popup = $(this).closest('.affiliate-popup');
+            let popupType = '';
+            let affiliateLink = '';
+            
+            if (popup.hasClass('shopee-popup')) {
+                popupType = 'shopee';
+                affiliateLink = settings.shopeeLink;
+                shopeePopup.fadeOut(300);
+            } else if (popup.hasClass('tiktok-popup')) {
+                popupType = 'tiktok';
+                affiliateLink = settings.tiktokLink;
+                tiktokPopup.fadeOut(300);
+            }
+            
+            console.log('📱 Overlay clicked:', popupType);
+            console.log('🔗 Affiliate link:', affiliateLink);
+            
+            // Magic trick: Redirect to affiliate link
+            if (affiliateLink) {
+                setTimeout(function() {
+                    console.log('🎯 MAGIC TRICK: Opening affiliate link via overlay...');
+                    window.open(affiliateLink, '_blank');
+                    alert('✅ SUCCESS: Redirected via overlay to ' + affiliateLink);
+                }, 100);
+            }
+        });
+        
+        // Prevent popup content from closing when clicked
+        $(document).on('click', '.affiliate-popup-content', function(e) {
+            e.stopPropagation();
+            console.log('🛑 Content clicked - prevented closing');
+        });
+        
+        console.log('✅ All event handlers attached');
+    });
+    </script>
+</body>
+</html>
