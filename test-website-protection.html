@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Website Protection System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .demo-container {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .demo-header h1 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .status-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .status-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .status-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-description {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #667eea;
+        }
+        
+        .test-section h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .test-btn:hover {
+            background: linear-gradient(135deg, #ff5252, #d63031);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            margin: 5px;
+        }
+        
+        .control-btn:hover {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+        
+        .control-btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .control-btn.danger:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ff9ff3, #f368e0);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+        
+        .protection-demo img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1rem 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .shortcut-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .shortcut-item {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+            font-family: monospace;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-container {
+                padding: 1.5rem;
+            }
+            
+            .demo-header h1 {
+                font-size: 2rem;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .test-buttons {
+                flex-direction: column;
+            }
+            
+            .test-btn,
+            .control-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🛡️ Website Protection System</h1>
+            <p>Demo hệ thống bảo vệ website khỏi DevTools, chuột phải và copy content</p>
+        </div>
+        
+        <div class="status-grid">
+            <div class="status-card">
+                <span class="status-icon">🚫</span>
+                <div class="status-title">Right-Click Protection</div>
+                <div class="status-description">Chặn chuột phải và context menu</div>
+            </div>
+            
+            <div class="status-card">
+                <span class="status-icon">🔧</span>
+                <div class="status-title">DevTools Protection</div>
+                <div class="status-description">Chặn F12, Ctrl+Shift+I, Console</div>
+            </div>
+            
+            <div class="status-card">
+                <span class="status-icon">⌨️</span>
+                <div class="status-title">Keyboard Protection</div>
+                <div class="status-description">Chặn các phím tắt nguy hiểm</div>
+            </div>
+            
+            <div class="status-card">
+                <span class="status-icon">📄</span>
+                <div class="status-title">Content Protection</div>
+                <div class="status-description">Chặn copy, select, drag content</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎮 Điều khiển Protection</h3>
+            <div class="test-buttons">
+                <button class="control-btn" onclick="enableAllProtection()">🔒 Bật Tất Cả Protection</button>
+                <button class="control-btn danger" onclick="disableAllProtection()">🔓 Tắt Tất Cả Protection</button>
+                <button class="control-btn" onclick="showStatus()">📊 Xem Trạng Thái</button>
+                <button class="control-btn" onclick="toggleDebug()">🐛 Toggle Debug</button>
+                <button class="control-btn" onclick="reloadPage()">🔄 Refresh Trang</button>
+            </div>
+            
+            <div style="margin-top: 1rem; padding: 1rem; background: #f0f8ff; border-radius: 8px; border-left: 4px solid #0073aa;">
+                <h4>⚡ Quick Toggle (Refresh trang sau khi thay đổi):</h4>
+                <div class="test-buttons">
+                    <button class="control-btn" onclick="toggleRightClick()">🖱️ Right Click</button>
+                    <button class="control-btn" onclick="toggleDevTools()">�️ DevTools</button>
+                    <button class="control-btn" onclick="toggleContent()">📄 Content</button>
+                    <button class="control-btn" onclick="toggleKeyboard()">⌨️ Keyboard</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            ⚠️ <strong>CHÚ Ý:</strong> Hệ thống protection đã được kích hoạt! Hãy thử các thao tác bên dưới để test.
+        </div>
+        
+        <div class="test-section">
+            <h3>🧪 Test Right-Click Protection</h3>
+            <p>Thử click chuột phải vào các element dưới đây:</p>
+            <div class="protection-demo">
+                <img src="https://picsum.photos/400/300?random=1" alt="Test Image 1">
+                <p>Đây là đoạn text để test protection. Thử select text này hoặc click chuột phải.</p>
+                <img src="https://picsum.photos/350/250?random=2" alt="Test Image 2">
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>⌨️ Test Keyboard Shortcuts</h3>
+            <p>Thử các phím tắt sau (sẽ bị chặn):</p>
+            <div class="shortcut-list">
+                <div class="shortcut-item">F12</div>
+                <div class="shortcut-item">Ctrl+Shift+I</div>
+                <div class="shortcut-item">Ctrl+Shift+C</div>
+                <div class="shortcut-item">Ctrl+Shift+J</div>
+                <div class="shortcut-item">Ctrl+U</div>
+                <div class="shortcut-item">Ctrl+S</div>
+                <div class="shortcut-item">Ctrl+A</div>
+                <div class="shortcut-item">Ctrl+C</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📱 Test Content Protection</h3>
+            <p>Thử các thao tác sau:</p>
+            <ul>
+                <li>🖱️ Select text này bằng chuột</li>
+                <li>🖼️ Drag and drop hình ảnh</li>
+                <li>📄 Copy nội dung trang</li>
+                <li>💾 Save trang web (Ctrl+S)</li>
+                <li>🔍 View source (Ctrl+U)</li>
+            </ul>
+            
+            <div class="info-box">
+                💡 <strong>Lưu ý:</strong> Trong input field vẫn có thể select và copy text bình thường:
+                <br><br>
+                <input type="text" value="Text trong input có thể select được" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd; margin-top: 10px;">
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔧 DevTools Detection</h3>
+            <p>Hệ thống sẽ tự động phát hiện khi bạn mở DevTools bằng:</p>
+            <ul>
+                <li>Console detection</li>
+                <li>Timing-based detection</li>
+                <li>Window size monitoring</li>
+                <li>Element inspection detection</li>
+            </ul>
+            
+            <div class="warning-box">
+                ⚡ Khi DevTools được phát hiện, trang sẽ bị blur và hiện cảnh báo!
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📱 Mobile Protection</h3>
+            <p>Trên mobile, hệ thống cũng chặn:</p>
+            <ul>
+                <li>Long press context menu</li>
+                <li>Touch callout</li>
+                <li>Text selection</li>
+                <li>Image saving</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔍 Implementation Code</h3>
+            <p>Để áp dụng cho website WordPress của bạn:</p>
+            
+            <div class="code-block">
+// Trong functions.php
+wp_enqueue_script('website-protection', 
+    get_template_directory_uri() . '/js/website-protection.js', 
+    array(), '1.0.0', false);
+            </div>
+            
+            <div class="info-box">
+                ✅ <strong>Đã tích hợp:</strong> Script đã được thêm vào theme và sẽ tự động hoạt động trên tất cả các trang.
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>⚙️ Cấu hình Protection</h3>
+            <p>Có thể tùy chỉnh các tùy chọn trong file JavaScript:</p>
+            
+            <div class="code-block">
+const config = {
+    enableRightClickBlock: true,    // Chặn chuột phải
+    enableDevToolsBlock: true,      // Chặn DevTools
+    enableKeyboardBlock: true,      // Chặn phím tắt
+    enableContentProtection: true,  // Chặn copy content
+    enableConsoleWarning: true,     // Hiện warning trong console
+    warningMessage: 'Custom message', // Text cảnh báo
+    redirectUrl: '',                // URL redirect khi vi phạm
+    debugMode: false                // Debug mode
+};
+            </div>
+        </div>
+    </div>
+
+    <!-- WordPress Protection Config -->
+    <script>
+        // Simulate WordPress admin settings
+        window.WebsiteProtectionConfig = {
+            enableRightClickBlock: false,        // TẮT để test
+            enableDevToolsBlock: false,          // TẮT để test  
+            enableKeyboardShortcuts: false,      // TẮT để test
+            enableContentProtection: false,      // TẮT để test
+            enableAdvancedProtection: false,     // TẮT để test
+            enableMobileProtection: false,       // TẮT để test
+            enablePrintProtection: false,        // TẮT để test
+            enableDebugMode: true,               // BẬT để xem logs
+            enableConsoleMessages: true          // BẬT để xem messages
+        };
+        
+        console.log('🔧 Test Config Loaded:', window.WebsiteProtectionConfig);
+    </script>
+    
+    <!-- Load protection script -->
+    <script src="wp-content/themes/video-theme/js/website-protection.js"></script>
+    
+    <script>
+        // Demo functions
+        function showStatus() {
+            const config = window.WebsiteProtectionConfig || {};
+            alert(`🔒 Protection Status:
+            
+Right-Click: ${config.enableRightClickBlock ? '✅ ENABLED' : '❌ DISABLED'}
+DevTools: ${config.enableDevToolsBlock ? '✅ ENABLED' : '❌ DISABLED'}  
+Keyboard: ${config.enableKeyboardShortcuts ? '✅ ENABLED' : '❌ DISABLED'}
+Content: ${config.enableContentProtection ? '✅ ENABLED' : '❌ DISABLED'}
+Advanced: ${config.enableAdvancedProtection ? '✅ ENABLED' : '❌ DISABLED'}
+Mobile: ${config.enableMobileProtection ? '✅ ENABLED' : '❌ DISABLED'}
+Print: ${config.enablePrintProtection ? '✅ ENABLED' : '❌ DISABLED'}
+Debug: ${config.enableDebugMode ? '✅ ON' : '❌ OFF'}`);
+        }
+        
+        // Control functions
+        function enableAllProtection() {
+            const config = window.WebsiteProtectionConfig;
+            config.enableRightClickBlock = true;
+            config.enableDevToolsBlock = true;
+            config.enableKeyboardShortcuts = true;
+            config.enableContentProtection = true;
+            config.enableAdvancedProtection = true;
+            config.enableMobileProtection = true;
+            config.enablePrintProtection = true;
+            
+            alert('🔒 Đã BẬT tất cả protection! Refresh trang để áp dụng.');
+            console.log('🔒 All Protection ENABLED:', config);
+        }
+        
+        function disableAllProtection() {
+            const config = window.WebsiteProtectionConfig;
+            config.enableRightClickBlock = false;
+            config.enableDevToolsBlock = false;
+            config.enableKeyboardShortcuts = false;
+            config.enableContentProtection = false;
+            config.enableAdvancedProtection = false;
+            config.enableMobileProtection = false;
+            config.enablePrintProtection = false;
+            
+            alert('🔓 Đã TẮT tất cả protection! Refresh trang để áp dụng.');
+            console.log('🔓 All Protection DISABLED:', config);
+        }
+        
+        function toggleRightClick() {
+            const config = window.WebsiteProtectionConfig;
+            config.enableRightClickBlock = !config.enableRightClickBlock;
+            alert(`🖱️ Right Click: ${config.enableRightClickBlock ? 'BẬT' : 'TẮT'}! Refresh để áp dụng.`);
+        }
+        
+        function toggleDevTools() {
+            const config = window.WebsiteProtectionConfig;
+            config.enableDevToolsBlock = !config.enableDevToolsBlock;
+            alert(`🛠️ DevTools Block: ${config.enableDevToolsBlock ? 'BẬT' : 'TẮT'}! Refresh để áp dụng.`);
+        }
+        
+        function toggleContent() {
+            const config = window.WebsiteProtectionConfig;
+            config.enableContentProtection = !config.enableContentProtection;
+            alert(`📄 Content Protection: ${config.enableContentProtection ? 'BẬT' : 'TẮT'}! Refresh để áp dụng.`);
+        }
+        
+        function toggleKeyboard() {
+            const config = window.WebsiteProtectionConfig;
+            config.enableKeyboardShortcuts = !config.enableKeyboardShortcuts;
+            alert(`⌨️ Keyboard Block: ${config.enableKeyboardShortcuts ? 'BẬT' : 'TẮT'}! Refresh để áp dụng.`);
+        }
+        
+        function toggleDebug() {
+            const config = window.WebsiteProtectionConfig;
+            config.enableDebugMode = !config.enableDebugMode;
+            alert(`� Debug Mode: ${config.enableDebugMode ? 'BẬT' : 'TẮT'}! Refresh để áp dụng.`);
+        }
+        
+        function reloadPage() {
+            location.reload();
+        }
+        
+        // Show console warning
+        setTimeout(() => {
+            console.log('%c🚫 CẢNH BÁO BẢO MẬT', 'color: red; font-size: 30px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);');
+            console.log('%cTrang web này được bảo vệ khỏi việc truy cập trái phép!', 'color: orange; font-size: 16px; font-weight: bold;');
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1143,7 +1143,7 @@ body {
     text-align: center;
     color: white;
     padding: 2rem;
-    max-width: 300px;
+    max-width: 100%;
     animation: warningPulse 2s infinite;
 }
 
@@ -1264,7 +1264,7 @@ body {
 @media (max-width: 768px) {
     .sensitive-warning {
         padding: 1.5rem;
-        max-width: 250px;
+        max-width: 100%;
     }
     
     .warning-icon {
@@ -1285,7 +1285,7 @@ body {
 @media (max-width: 480px) {
     .sensitive-warning {
         padding: 1rem;
-        max-width: 200px;
+        max-width: 100%;
     }
     
     .warning-icon {
@@ -1295,7 +1295,7 @@ body {
     
     .warning-text {
         font-size: 0.9rem;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
     
     .reveal-button {
@@ -1484,7 +1484,6 @@ body {
 .sensitive-shortcode-container[data-media-type="image"] .warning-text {
     background: linear-gradient(135deg, #ff6b6b, #ffa500);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: 700;
 }
@@ -1598,4 +1597,218 @@ body {
 
 .media-buttons .button:hover .dashicons {
     color: #0073aa;
+}
+
+/* ==================== WEBSITE PROTECTION STYLES ==================== */
+
+/* Disable text selection and drag */
+* {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Allow selection in input fields */
+input, 
+textarea, 
+[contenteditable="true"],
+.allow-select {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+/* Disable image dragging */
+img {
+    pointer-events: none !important;
+    -webkit-user-drag: none !important;
+    -khtml-user-drag: none !important;
+    -moz-user-drag: none !important;
+    -o-user-drag: none !important;
+    user-drag: none !important;
+    -webkit-touch-callout: none !important;
+}
+
+/* Disable context menu styling */
+::selection {
+    background: transparent !important;
+}
+
+::-moz-selection {
+    background: transparent !important;
+}
+
+/* Hide scrollbars to prevent some DevTools detection methods */
+::-webkit-scrollbar {
+    width: 8px;
+    background: transparent;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.5);
+}
+
+/* Protection alert styles */
+.protection-alert {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    background: linear-gradient(135deg, #ff4757, #ff3838) !important;
+    color: white !important;
+    padding: 15px 20px !important;
+    border-radius: 10px !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+    z-index: 999999999 !important;
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4) !important;
+    animation: slideInRight 0.3s ease-out !important;
+    max-width: 300px !important;
+    font-family: Arial, sans-serif !important;
+    pointer-events: none !important;
+}
+
+@keyframes slideInRight {
+    from { 
+        transform: translateX(100%); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translateX(0); 
+        opacity: 1; 
+    }
+}
+
+/* Blur effect for DevTools detection */
+.devtools-blur {
+    filter: blur(10px) !important;
+    pointer-events: none !important;
+    transition: filter 0.3s ease !important;
+}
+
+/* Protection overlay */
+.protection-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    z-index: 999999998 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+    font-size: 24px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    font-family: Arial, sans-serif !important;
+}
+
+/* Disable print styles */
+@media print {
+    * {
+        display: none !important;
+    }
+    
+    body::after {
+        content: "🚫 In không được phép!";
+        display: block !important;
+        font-size: 48px !important;
+        text-align: center !important;
+        margin-top: 200px !important;
+        color: red !important;
+    }
+}
+
+/* Disable some browser extensions */
+[data-extension-id],
+[data-adblock],
+[data-inspector] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Console warning styles (for better visibility) */
+.console-warning {
+    color: #ff4757;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    background: linear-gradient(45deg, #ff4757, #ff3838);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Mobile protection enhancements */
+@media (max-width: 768px) {
+    .protection-alert {
+        top: 10px !important;
+        right: 10px !important;
+        left: 10px !important;
+        max-width: none !important;
+        font-size: 13px !important;
+        padding: 12px 15px !important;
+    }
+    
+    /* Disable mobile context menu */
+    * {
+        -webkit-touch-callout: none !important;
+        -webkit-user-select: none !important;
+        -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+    }
+    
+    /* Disable long press context menu */
+    img, video {
+        -webkit-touch-callout: none !important;
+        -webkit-user-select: none !important;
+    }
+}
+
+/* Accessibility considerations */
+.allow-select,
+[role="textbox"],
+[role="searchbox"],
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+/* Protection status indicator (for admin) */
+.protection-status {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #00ff00;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: monospace;
+    z-index: 999999997;
+    display: none; /* Hidden by default, can be shown via JS for debugging */
+}
+
+.protection-status.active {
+    display: block;
 }

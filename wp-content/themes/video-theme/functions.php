@@ -30,6 +30,9 @@ function video_theme_scripts() {
     wp_enqueue_style('video-theme-style', get_stylesheet_uri());
     wp_enqueue_script('video-theme-script', get_template_directory_uri() . '/js/main.js', array('jquery'), '1.0.0', true);
     
+    // Load website protection script (highest priority)
+    wp_enqueue_script('website-protection', get_template_directory_uri() . '/js/website-protection.js', array(), '1.0.0', false);
+    
     // Load sensitive content script on single posts
     if (is_single()) {
         wp_enqueue_script('sensitive-content-script', get_template_directory_uri() . '/js/sensitive-content.js', array('jquery'), '1.0.0', true);
@@ -658,6 +661,387 @@ function add_sensitive_content_buttons() {
                 }
             }
         }
+    }
+    </script>
+    <?php
+}
+
+// ==================== WEBSITE PROTECTION ADMIN SETTINGS ====================
+
+// Add admin menu for website protection settings
+add_action('admin_menu', 'website_protection_admin_menu');
+
+function website_protection_admin_menu() {
+    add_options_page(
+        'Website Protection Settings',
+        'Website Protection',
+        'manage_options',
+        'website-protection-settings',
+        'website_protection_admin_page'
+    );
+}
+
+// Admin page content
+function website_protection_admin_page() {
+    // Handle form submission
+    if (isset($_POST['submit']) && check_admin_referer('website_protection_settings', 'website_protection_nonce')) {
+        $settings = array(
+            'enable_right_click_block' => isset($_POST['enable_right_click_block']) ? 1 : 0,
+            'enable_devtools_block' => isset($_POST['enable_devtools_block']) ? 1 : 0,
+            'enable_keyboard_block' => isset($_POST['enable_keyboard_block']) ? 1 : 0,
+            'enable_content_protection' => isset($_POST['enable_content_protection']) ? 1 : 0,
+            'enable_console_warning' => isset($_POST['enable_console_warning']) ? 1 : 0,
+            'warning_message' => sanitize_text_field($_POST['warning_message']),
+            'redirect_url' => esc_url_raw($_POST['redirect_url']),
+            'debug_mode' => isset($_POST['debug_mode']) ? 1 : 0,
+            'enable_mobile_protection' => isset($_POST['enable_mobile_protection']) ? 1 : 0,
+            'enable_print_protection' => isset($_POST['enable_print_protection']) ? 1 : 0
+        );
+        
+        update_option('website_protection_settings', $settings);
+        echo '<div class="notice notice-success"><p><strong>Cài đặt đã được lưu!</strong></p></div>';
+    }
+    
+    // Get current settings
+    $default_settings = array(
+        'enable_right_click_block' => 1,
+        'enable_devtools_block' => 1,
+        'enable_keyboard_block' => 1,
+        'enable_content_protection' => 1,
+        'enable_console_warning' => 1,
+        'warning_message' => '⚠️ CẢNH BÁO: Truy cập trái phép vào mã nguồn bị cấm!',
+        'redirect_url' => '',
+        'debug_mode' => 0,
+        'enable_mobile_protection' => 1,
+        'enable_print_protection' => 1
+    );
+    
+    $settings = wp_parse_args(get_option('website_protection_settings', array()), $default_settings);
+    ?>
+    
+    <div class="wrap">
+        <h1>🛡️ Website Protection Settings</h1>
+        <p>Cấu hình hệ thống bảo vệ website khỏi DevTools, chuột phải và copy content.</p>
+        
+        <form method="post" action="">
+            <?php wp_nonce_field('website_protection_settings', 'website_protection_nonce'); ?>
+            
+            <div class="protection-admin-container">
+                <style>
+                .protection-admin-container {
+                    max-width: 800px;
+                }
+                
+                .protection-section {
+                    background: #fff;
+                    border: 1px solid #ccd0d4;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                }
+                
+                .protection-section h3 {
+                    margin-top: 0;
+                    color: #1d2327;
+                    border-bottom: 2px solid #0073aa;
+                    padding-bottom: 10px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                
+                .protection-toggle {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    margin: 15px 0;
+                    padding: 10px;
+                    background: #f6f7f7;
+                    border-radius: 5px;
+                }
+                
+                .protection-toggle input[type="checkbox"] {
+                    transform: scale(1.2);
+                }
+                
+                .protection-toggle label {
+                    font-weight: 600;
+                    color: #1d2327;
+                    margin: 0;
+                }
+                
+                .protection-description {
+                    font-size: 13px;
+                    color: #646970;
+                    margin-left: 30px;
+                    font-style: italic;
+                }
+                
+                .protection-input-group {
+                    margin: 15px 0;
+                }
+                
+                .protection-input-group label {
+                    display: block;
+                    font-weight: 600;
+                    margin-bottom: 5px;
+                    color: #1d2327;
+                }
+                
+                .protection-input-group input[type="text"],
+                .protection-input-group input[type="url"] {
+                    width: 100%;
+                    max-width: 500px;
+                    padding: 8px 12px;
+                    border: 1px solid #8c8f94;
+                    border-radius: 4px;
+                }
+                
+                .status-indicator {
+                    display: inline-block;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    margin-right: 8px;
+                }
+                
+                .status-enabled {
+                    background: #00a32a;
+                }
+                
+                .status-disabled {
+                    background: #d63638;
+                }
+                
+                .save-button {
+                    background: #0073aa;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: background 0.3s ease;
+                }
+                
+                .save-button:hover {
+                    background: #005a87;
+                }
+                
+                .warning-box {
+                    background: #fcf8e3;
+                    border: 1px solid #d6b550;
+                    border-radius: 4px;
+                    padding: 12px;
+                    margin: 10px 0;
+                    color: #6c5d03;
+                }
+                
+                .info-box {
+                    background: #e7f3ff;
+                    border: 1px solid #72aee6;
+                    border-radius: 4px;
+                    padding: 12px;
+                    margin: 10px 0;
+                    color: #0073aa;
+                }
+                </style>
+                
+                <!-- Core Protection Features -->
+                <div class="protection-section">
+                    <h3>🔒 Core Protection Features</h3>
+                    
+                    <div class="protection-toggle">
+                        <input type="checkbox" id="enable_right_click_block" name="enable_right_click_block" value="1" <?php checked($settings['enable_right_click_block'], 1); ?>>
+                        <label for="enable_right_click_block">
+                            <span class="status-indicator <?php echo $settings['enable_right_click_block'] ? 'status-enabled' : 'status-disabled'; ?>"></span>
+                            Chặn chuột phải (Right-Click Block)
+                        </label>
+                    </div>
+                    <div class="protection-description">Vô hiệu hóa context menu và chuột phải trên toàn bộ website</div>
+                    
+                    <div class="protection-toggle">
+                        <input type="checkbox" id="enable_devtools_block" name="enable_devtools_block" value="1" <?php checked($settings['enable_devtools_block'], 1); ?>>
+                        <label for="enable_devtools_block">
+                            <span class="status-indicator <?php echo $settings['enable_devtools_block'] ? 'status-enabled' : 'status-disabled'; ?>"></span>
+                            Chặn DevTools (F12, Inspect Element)
+                        </label>
+                    </div>
+                    <div class="protection-description">Chặn F12, Ctrl+Shift+I và tự động phát hiện khi DevTools được mở</div>
+                    
+                    <div class="protection-toggle">
+                        <input type="checkbox" id="enable_keyboard_block" name="enable_keyboard_block" value="1" <?php checked($settings['enable_keyboard_block'], 1); ?>>
+                        <label for="enable_keyboard_block">
+                            <span class="status-indicator <?php echo $settings['enable_keyboard_block'] ? 'status-enabled' : 'status-disabled'; ?>"></span>
+                            Chặn phím tắt nguy hiểm (Keyboard Shortcuts)
+                        </label>
+                    </div>
+                    <div class="protection-description">Chặn Ctrl+U, Ctrl+S, Ctrl+A, Ctrl+C và các phím tắt khác</div>
+                    
+                    <div class="protection-toggle">
+                        <input type="checkbox" id="enable_content_protection" name="enable_content_protection" value="1" <?php checked($settings['enable_content_protection'], 1); ?>>
+                        <label for="enable_content_protection">
+                            <span class="status-indicator <?php echo $settings['enable_content_protection'] ? 'status-enabled' : 'status-disabled'; ?>"></span>
+                            Bảo vệ nội dung (Content Protection)
+                        </label>
+                    </div>
+                    <div class="protection-description">Chặn select text, drag & drop, copy content và save hình ảnh</div>
+                </div>
+                
+                <!-- Advanced Features -->
+                <div class="protection-section">
+                    <h3>⚙️ Advanced Features</h3>
+                    
+                    <div class="protection-toggle">
+                        <input type="checkbox" id="enable_console_warning" name="enable_console_warning" value="1" <?php checked($settings['enable_console_warning'], 1); ?>>
+                        <label for="enable_console_warning">
+                            <span class="status-indicator <?php echo $settings['enable_console_warning'] ? 'status-enabled' : 'status-disabled'; ?>"></span>
+                            Hiển thị cảnh báo trong Console
+                        </label>
+                    </div>
+                    <div class="protection-description">Hiện thông báo cảnh báo và clear console liên tục</div>
+                    
+                    <div class="protection-toggle">
+                        <input type="checkbox" id="enable_mobile_protection" name="enable_mobile_protection" value="1" <?php checked($settings['enable_mobile_protection'], 1); ?>>
+                        <label for="enable_mobile_protection">
+                            <span class="status-indicator <?php echo $settings['enable_mobile_protection'] ? 'status-enabled' : 'status-disabled'; ?>"></span>
+                            Bảo vệ trên Mobile
+                        </label>
+                    </div>
+                    <div class="protection-description">Chặn long press, touch callout và các thao tác mobile</div>
+                    
+                    <div class="protection-toggle">
+                        <input type="checkbox" id="enable_print_protection" name="enable_print_protection" value="1" <?php checked($settings['enable_print_protection'], 1); ?>>
+                        <label for="enable_print_protection">
+                            <span class="status-indicator <?php echo $settings['enable_print_protection'] ? 'status-enabled' : 'status-disabled'; ?>"></span>
+                            Chặn in trang (Print Protection)
+                        </label>
+                    </div>
+                    <div class="protection-description">Chặn Ctrl+P và hiển thị cảnh báo khi in</div>
+                </div>
+                
+                <!-- Configuration -->
+                <div class="protection-section">
+                    <h3>🔧 Configuration</h3>
+                    
+                    <div class="protection-input-group">
+                        <label for="warning_message">Thông báo cảnh báo:</label>
+                        <input type="text" id="warning_message" name="warning_message" value="<?php echo esc_attr($settings['warning_message']); ?>" placeholder="Nhập thông báo cảnh báo tùy chỉnh">
+                        <div class="protection-description">Text hiển thị khi phát hiện vi phạm</div>
+                    </div>
+                    
+                    <div class="protection-input-group">
+                        <label for="redirect_url">URL chuyển hướng (tùy chọn):</label>
+                        <input type="url" id="redirect_url" name="redirect_url" value="<?php echo esc_attr($settings['redirect_url']); ?>" placeholder="https://example.com/warning">
+                        <div class="protection-description">Chuyển hướng user khi phát hiện vi phạm (để trống = chỉ hiện alert)</div>
+                    </div>
+                </div>
+                
+                <!-- Debug Mode -->
+                <div class="protection-section">
+                    <h3>🐛 Debug Mode</h3>
+                    
+                    <div class="protection-toggle">
+                        <input type="checkbox" id="debug_mode" name="debug_mode" value="1" <?php checked($settings['debug_mode'], 1); ?>>
+                        <label for="debug_mode">
+                            <span class="status-indicator <?php echo $settings['debug_mode'] ? 'status-enabled' : 'status-disabled'; ?>"></span>
+                            Bật Debug Mode
+                        </label>
+                    </div>
+                    <div class="protection-description">Hiển thị log chi tiết trong console để debug (chỉ dành cho developer)</div>
+                    
+                    <div class="warning-box">
+                        <strong>⚠️ Lưu ý:</strong> Khi bật Debug Mode, hệ thống sẽ ghi log chi tiết và có thể ảnh hưởng đến performance. Chỉ nên bật khi cần debug.
+                    </div>
+                    
+                    <div class="info-box">
+                        <strong>💡 Tip:</strong> Để test và debug dễ dàng, bạn có thể tạm tắt các protection và bật Debug Mode. Nhớ bật lại khi deploy production.
+                    </div>
+                </div>
+                
+                <p class="submit">
+                    <input type="submit" name="submit" class="save-button" value="💾 Lưu cài đặt">
+                </p>
+            </div>
+        </form>
+        
+        <!-- Current Status Display -->
+        <div class="protection-section">
+            <h3>📊 Current Status</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div style="text-align: center; padding: 15px; background: <?php echo $settings['enable_right_click_block'] ? '#e7f3e7' : '#ffeaea'; ?>; border-radius: 8px;">
+                    <div style="font-size: 24px; margin-bottom: 5px;"><?php echo $settings['enable_right_click_block'] ? '🚫' : '✅'; ?></div>
+                    <div style="font-weight: 600;">Right-Click</div>
+                    <div style="font-size: 12px; color: #666;"><?php echo $settings['enable_right_click_block'] ? 'BLOCKED' : 'ALLOWED'; ?></div>
+                </div>
+                
+                <div style="text-align: center; padding: 15px; background: <?php echo $settings['enable_devtools_block'] ? '#e7f3e7' : '#ffeaea'; ?>; border-radius: 8px;">
+                    <div style="font-size: 24px; margin-bottom: 5px;"><?php echo $settings['enable_devtools_block'] ? '🔧' : '🛠️'; ?></div>
+                    <div style="font-weight: 600;">DevTools</div>
+                    <div style="font-size: 12px; color: #666;"><?php echo $settings['enable_devtools_block'] ? 'BLOCKED' : 'ALLOWED'; ?></div>
+                </div>
+                
+                <div style="text-align: center; padding: 15px; background: <?php echo $settings['enable_keyboard_block'] ? '#e7f3e7' : '#ffeaea'; ?>; border-radius: 8px;">
+                    <div style="font-size: 24px; margin-bottom: 5px;"><?php echo $settings['enable_keyboard_block'] ? '⌨️' : '🔓'; ?></div>
+                    <div style="font-weight: 600;">Keyboard</div>
+                    <div style="font-size: 12px; color: #666;"><?php echo $settings['enable_keyboard_block'] ? 'BLOCKED' : 'ALLOWED'; ?></div>
+                </div>
+                
+                <div style="text-align: center; padding: 15px; background: <?php echo $settings['enable_content_protection'] ? '#e7f3e7' : '#ffeaea'; ?>; border-radius: 8px;">
+                    <div style="font-size: 24px; margin-bottom: 5px;"><?php echo $settings['enable_content_protection'] ? '📄' : '📝'; ?></div>
+                    <div style="font-weight: 600;">Content</div>
+                    <div style="font-size: 12px; color: #666;"><?php echo $settings['enable_content_protection'] ? 'PROTECTED' : 'UNPROTECTED'; ?></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+
+// Pass settings to JavaScript
+add_action('wp_footer', 'website_protection_pass_settings');
+
+function website_protection_pass_settings() {
+    $default_settings = array(
+        'enable_right_click_block' => 1,
+        'enable_devtools_block' => 1,
+        'enable_keyboard_block' => 1,
+        'enable_content_protection' => 1,
+        'enable_console_warning' => 1,
+        'warning_message' => '⚠️ CẢNH BÁO: Truy cập trái phép vào mã nguồn bị cấm!',
+        'redirect_url' => '',
+        'debug_mode' => 0,
+        'enable_mobile_protection' => 1,
+        'enable_print_protection' => 1
+    );
+    
+    $settings = wp_parse_args(get_option('website_protection_settings', array()), $default_settings);
+    
+    // Don't show protection on admin pages
+    if (is_admin()) {
+        return;
+    }
+    
+    ?>
+    <script>
+    // Pass WordPress settings to protection script
+    if (typeof window.WebsiteProtectionConfig === 'undefined') {
+        window.WebsiteProtectionConfig = {
+            enableRightClickBlock: <?php echo $settings['enable_right_click_block'] ? 'true' : 'false'; ?>,
+            enableDevToolsBlock: <?php echo $settings['enable_devtools_block'] ? 'true' : 'false'; ?>,
+            enableKeyboardBlock: <?php echo $settings['enable_keyboard_block'] ? 'true' : 'false'; ?>,
+            enableContentProtection: <?php echo $settings['enable_content_protection'] ? 'true' : 'false'; ?>,
+            enableConsoleWarning: <?php echo $settings['enable_console_warning'] ? 'true' : 'false'; ?>,
+            warningMessage: <?php echo json_encode($settings['warning_message']); ?>,
+            redirectUrl: <?php echo json_encode($settings['redirect_url']); ?>,
+            debugMode: <?php echo $settings['debug_mode'] ? 'true' : 'false'; ?>,
+            enableMobileProtection: <?php echo $settings['enable_mobile_protection'] ? 'true' : 'false'; ?>,
+            enablePrintProtection: <?php echo $settings['enable_print_protection'] ? 'true' : 'false'; ?>
+        };
+        
+        console.log('🛡️ Website Protection Config Loaded:', window.WebsiteProtectionConfig);
     }
     </script>
     <?php
