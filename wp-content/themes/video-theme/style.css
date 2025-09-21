@@ -1581,6 +1581,13 @@ body {
         font-size: 1.8rem;
         animation: initial;
     }
+    .sensitive-shortcode-container[data-media-type="image"] .warning-icon {
+        color: #ff6b6b;
+        font-size: 2.5rem;
+    }
+    .warning-icon {
+        margin-bottom: 0px;
+    }
 }
 
 /* Admin editor button styling */
