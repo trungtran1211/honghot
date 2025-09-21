@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Sensitive Content System</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .test-controls {
+            background: #333;
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .test-controls button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .test-controls button:hover {
+            background: #5a6fd8;
+        }
+        
+        .post-description img,
+        .post-description video {
+            max-width: 100%;
+            height: auto;
+            margin: 1rem 0;
+            border-radius: 10px;
+        }
+        
+        h1 { color: #333; }
+        h2 { color: #666; margin-top: 2rem; }
+        
+        /* Include sensitive content styles */
+        .sensitive-media-container {
+            position: relative;
+            display: inline-block;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 1rem 0;
+            max-width: 100%;
+        }
+        
+        .sensitive-media-container .blurred-media {
+            filter: blur(20px);
+            transition: filter 0.5s ease;
+            cursor: pointer;
+        }
+        
+        .sensitive-media-container .revealed-media {
+            filter: none;
+            transition: filter 0.5s ease;
+        }
+        
+        .sensitive-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+        
+        .sensitive-overlay:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.02);
+        }
+        
+        .sensitive-warning {
+            text-align: center;
+            color: white;
+            padding: 2rem;
+            max-width: 300px;
+            animation: warningPulse 2s infinite;
+        }
+        
+        @keyframes warningPulse {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+        }
+        
+        .warning-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: warningShake 1s infinite;
+        }
+        
+        @keyframes warningShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .warning-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .reveal-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .reveal-button:hover {
+            background: linear-gradient(135deg, #ff5252, #e74c3c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+        
+        .button-icon {
+            font-size: 1.2rem;
+            animation: eyeBlink 3s infinite;
+        }
+        
+        @keyframes eyeBlink {
+            0%, 90%, 100% { opacity: 1; }
+            95% { opacity: 0.3; }
+        }
+        
+        .sensitive-media-container.revealing .sensitive-overlay {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        .sensitive-media-container.revealed .sensitive-overlay {
+            display: none;
+        }
+        
+        .sensitive-media-container.revealed {
+            animation: revealSuccess 0.5s ease-out;
+        }
+        
+        @keyframes revealSuccess {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 rgba(46, 204, 113, 0.7);
+            }
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(46, 204, 113, 0);
+            }
+        }
+        
+        .sensitive-media-container[data-media-type="image"] .sensitive-overlay {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.8), rgba(255, 100, 100, 0.8));
+        }
+        
+        .sensitive-media-container[data-media-type="video"] .sensitive-overlay {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.8), rgba(255, 20, 147, 0.8));
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔒 Test Hệ Thống Che Nội Dung Nhạy Cảm</h1>
+        
+        <div class="test-controls">
+            <h3>🛠️ Điều khiển test:</h3>
+            <button onclick="toggleSensitiveMode()">Bật/Tắt chế độ nhạy cảm</button>
+            <button onclick="sensitiveContentDebug.revealAll()">Hiện tất cả nội dung</button>
+            <button onclick="sensitiveContentDebug.blurAll()">Che tất cả nội dung</button>
+            <button onclick="sensitiveContentDebug.getStats()">Xem thống kê</button>
+            <p id="status">Trạng thái: <span id="mode-status">Chế độ nhạy cảm BẬT</span></p>
+        </div>
+        
+        <div class="post-description">
+            <h2>📸 Hình ảnh test</h2>
+            <p>Các hình ảnh dưới đây sẽ bị che mờ khi chế độ nhạy cảm được bật:</p>
+            
+            <img src="https://picsum.photos/600/400?random=1" alt="Test Image 1">
+            <img src="https://picsum.photos/500/300?random=2" alt="Test Image 2">
+            
+            <h2>🎥 Video test</h2>
+            <p>Video YouTube này cũng sẽ bị che mờ:</p>
+            
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+            
+            <h2>📝 Văn bản bình thường</h2>
+            <p>Văn bản này không bị ảnh hưởng bởi hệ thống che nội dung.</p>
+            
+            <img src="https://picsum.photos/400/600?random=3" alt="Test Image 3">
+        </div>
+    </div>
+
+    <script>
+        // Simulate WordPress environment
+        window.hasSensitiveContent = true;
+        window.postId = 123;
+        
+        // Toggle function for testing
+        function toggleSensitiveMode() {
+            window.hasSensitiveContent = !window.hasSensitiveContent;
+            const status = document.getElementById('mode-status');
+            
+            if (window.hasSensitiveContent) {
+                status.textContent = 'Chế độ nhạy cảm BẬT';
+                status.style.color = '#ff6b6b';
+                // Reload sensitive content system
+                location.reload();
+            } else {
+                status.textContent = 'Chế độ nhạy cảm TẮT';
+                status.style.color = '#2ecc71';
+                // Remove all blur effects
+                jQuery('.sensitive-media-container').each(function() {
+                    const $container = jQuery(this);
+                    const $media = $container.find('.blurred-media, .revealed-media');
+                    $media.unwrap().removeClass('blurred-media revealed-media');
+                });
+                jQuery('.sensitive-overlay').remove();
+            }
+        }
+    </script>
+
+    <!-- Include the sensitive content script -->
+    <script>
+/**
+ * Sensitive Content Blur System
+ * Automatically blurs sensitive images and videos with click-to-view functionality
+ */
+
+jQuery(document).ready(function($) {
+    console.log('🔒 Sensitive Content System Loading...');
+    
+    // Check if this post has sensitive content
+    if (typeof window.hasSensitiveContent === 'undefined' || !window.hasSensitiveContent) {
+        console.log('ℹ️ No sensitive content detected, skipping blur system');
+        return;
+    }
+    
+    console.log('⚠️ Sensitive content detected, applying blur system...');
+    
+    // Configuration
+    const config = {
+        blurAmount: '20px',
+        animationDuration: 300,
+        warningText: 'Hình ảnh nhạy cảm, muốn xem thì nhấn vào?',
+        buttonText: 'Nhấn để xem',
+        selectors: {
+            images: '.post-content img, .post-description img',
+            videos: '.post-content video, .post-description video, .post-content iframe[src*="youtube"], .post-description iframe[src*="youtube"], .post-content iframe[src*="vimeo"], .post-description iframe[src*="vimeo"]'
+        }
+    };
+    
+    // Find all media elements that need to be blurred
+    const mediaElements = $(config.selectors.images + ', ' + config.selectors.videos);
+    
+    if (mediaElements.length === 0) {
+        console.log('📷 No media elements found to blur');
+        return;
+    }
+    
+    console.log(`📷 Found ${mediaElements.length} media elements to blur`);
+    
+    // Process each media element
+    mediaElements.each(function(index) {
+        const $media = $(this);
+        const mediaType = $media.is('img') ? 'image' : 'video';
+        const mediaId = 'sensitive-media-' + index;
+        
+        console.log(`🔒 Processing ${mediaType} #${index}`);
+        
+        // Skip if already processed
+        if ($media.closest('.sensitive-media-container').length > 0) {
+            return;
+        }
+        
+        // Create container
+        const $container = $('<div>', {
+            'class': 'sensitive-media-container',
+            'data-media-type': mediaType,
+            'data-media-id': mediaId
+        });
+        
+        // Create blur overlay
+        const $overlay = $('<div>', {
+            'class': 'sensitive-overlay',
+            'data-media-id': mediaId
+        });
+        
+        // Create warning content
+        const $warningContent = $('<div>', {
+            'class': 'sensitive-warning',
+            'html': `
+                <div class="warning-icon">⚠️</div>
+                <div class="warning-text">${config.warningText}</div>
+                <button class="reveal-button" data-media-id="${mediaId}">
+                    <span class="button-icon">👁️</span>
+                    <span class="button-text">${config.buttonText}</span>
+                </button>
+            `
+        });
+        
+        // Wrap media element
+        $media.wrap($container);
+        $container = $media.parent(); // Get the actual wrapped container
+        
+        // Add blur effect to media
+        $media.addClass('blurred-media');
+        
+        // Add overlay and warning
+        $container.append($overlay);
+        $overlay.append($warningContent);
+        
+        // Add click handler to reveal content
+        $container.on('click', '.reveal-button, .sensitive-overlay', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const mediaId = $(this).data('media-id');
+            console.log(`👁️ Revealing media: ${mediaId}`);
+            
+            // Find the container for this media
+            const $targetContainer = $(`.sensitive-media-container[data-media-id="${mediaId}"]`);
+            const $targetMedia = $targetContainer.find('.blurred-media');
+            const $targetOverlay = $targetContainer.find('.sensitive-overlay');
+            
+            // Add revealing class for animation
+            $targetContainer.addClass('revealing');
+            
+            // Fade out overlay
+            $targetOverlay.fadeOut(config.animationDuration, function() {
+                // Remove blur from media
+                $targetMedia.removeClass('blurred-media').addClass('revealed-media');
+                $targetContainer.addClass('revealed');
+                
+                console.log(`✅ Media revealed: ${mediaId}`);
+            });
+        });
+        
+        // Prevent media click when blurred
+        $media.on('click', function(e) {
+            if ($(this).hasClass('blurred-media')) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Trigger reveal instead
+                $(this).closest('.sensitive-media-container').find('.reveal-button').click();
+            }
+        });
+    });
+    
+    // Add keyboard support (Enter/Space on focused reveal buttons)
+    $(document).on('keydown', '.reveal-button', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            $(this).click();
+        }
+    });
+    
+    // Analytics tracking (optional)
+    $(document).on('click', '.reveal-button', function() {
+        const mediaType = $(this).closest('.sensitive-media-container').data('media-type');
+        console.log(`📊 Analytics: Sensitive ${mediaType} revealed`);
+    });
+    
+    console.log('✅ Sensitive Content System Loaded Successfully');
+});
+
+// Admin test functions for debugging
+window.sensitiveContentDebug = {
+    revealAll: function() {
+        jQuery('.reveal-button').click();
+        console.log('🔓 All sensitive content revealed');
+    },
+    
+    blurAll: function() {
+        jQuery('.revealed-media').removeClass('revealed-media').addClass('blurred-media');
+        jQuery('.sensitive-media-container').removeClass('revealed revealing');
+        jQuery('.sensitive-overlay').fadeIn(300);
+        console.log('🔒 All content blurred again');
+    },
+    
+    getStats: function() {
+        const total = jQuery('.sensitive-media-container').length;
+        const revealed = jQuery('.sensitive-media-container.revealed').length;
+        const blurred = total - revealed;
+        
+        console.log('📊 Sensitive Content Stats:');
+        console.log(`   Total: ${total}`);
+        console.log(`   Revealed: ${revealed}`);
+        console.log(`   Still Blurred: ${blurred}`);
+        
+        return { total, revealed, blurred };
+    }
+};
+    </script>
+</body>
+</html>

@@ -9,69 +9,16 @@
                             <span class="footer-icon">🎬</span>
                             <?php bloginfo('name'); ?>
                         </h3>
-                        <p class="footer-description">
-                            <?php 
-                            $description = get_bloginfo('description');
-                            echo $description ? $description : 'Nền tảng chia sẻ video và nội dung giải trí hàng đầu. Khám phá thế giới video đa dạng và thú vị.';
-                            ?>
-                        </p>
                         <div class="footer-social">
                             <a href="#" class="social-link facebook" title="Facebook">
                                 <i class="fab fa-facebook-f"></i>
                             </a>
-                            <a href="#" class="social-link youtube" title="YouTube">
-                                <i class="fab fa-youtube"></i>
-                            </a>
                             <a href="#" class="social-link tiktok" title="TikTok">
                                 <i class="fab fa-tiktok"></i>
                             </a>
-                            <a href="#" class="social-link instagram" title="Instagram">
-                                <i class="fab fa-instagram"></i>
+                             <a href="#" class="social-link threads" title="Threads">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2 .9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53l-.3 0c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6l0-.5C17 184.3 33.6 127.2 65.9 86.2 102.2 40.1 156.2 16.5 226.4 16l.3 0c70.3 .5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4-26.2 33.3-39.8 81.5-40.3 143.2 .5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8l-.7 0c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1l.8 0c62.6 .4 99.9 39.5 103.7 107.7l-.2 .2 .1 0zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6 .1-14.4 .4-42.9 2.4-57.2 23.2-56.2 41.8l-.1 .1z"/></svg>
                             </a>
-                        </div>
-                    </div>
-                    
-                    <div class="footer-section links-section">
-                        <h4 class="footer-subtitle">Danh mục</h4>
-                        <ul class="footer-links">
-                            <li><a href="<?php echo esc_url(home_url('/')); ?>">🏠 Trang chủ</a></li>
-                            <li><a href="<?php echo esc_url(home_url('/category/video')); ?>">🎥 Video</a></li>
-                            <li><a href="<?php echo esc_url(home_url('/category/tin-tuc')); ?>">📰 Tin tức</a></li>
-                            <li><a href="<?php echo esc_url(home_url('/category/giai-tri')); ?>">🎭 Giải trí</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-section support-section">
-                        <h4 class="footer-subtitle">Hỗ trợ</h4>
-                        <ul class="footer-links">
-                            <li><a href="<?php echo esc_url(home_url('/lien-he')); ?>">📧 Liên hệ</a></li>
-                            <li><a href="<?php echo esc_url(home_url('/chinh-sach')); ?>">📋 Chính sách</a></li>
-                            <li><a href="<?php echo esc_url(home_url('/dieu-khoan')); ?>">📜 Điều khoản</a></li>
-                            <li><a href="<?php echo esc_url(home_url('/faq')); ?>">❓ FAQ</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-section newsletter-section">
-                        <h4 class="footer-subtitle">Theo dõi cập nhật</h4>
-                        <p class="newsletter-text">Đăng ký để nhận thông báo về video và nội dung mới nhất</p>
-                        <form class="newsletter-form" action="#" method="post">
-                            <div class="newsletter-input-wrapper">
-                                <input type="email" class="newsletter-input" placeholder="Email của bạn..." required>
-                                <button type="submit" class="newsletter-button">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
-                        </form>
-                        
-                        <div class="footer-stats">
-                            <div class="stat-item">
-                                <span class="stat-number"><?php echo wp_count_posts()->publish; ?></span>
-                                <span class="stat-label">Bài viết</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number"><?php echo get_comments(array('count' => true)); ?></span>
-                                <span class="stat-label">Bình luận</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -81,11 +28,8 @@
         <div class="footer-bottom">
             <div class="container">
                 <div class="footer-bottom-content">
-                    <div class="copyright">
-                        <p>&copy; <?php echo date('Y'); ?> <strong><?php bloginfo('name'); ?></strong>. Tất cả quyền được bảo lưu.</p>
-                    </div>
                     <div class="footer-credits">
-                        <p>Được thiết kế với ❤️ tại Việt Nam | <a href="#top" class="back-to-top">⬆️ Lên đầu trang</a></p>
+                        <a href="#top" class="back-to-top">⬆️ Lên đầu trang</a>
                     </div>
                 </div>
             </div>
