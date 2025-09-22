@@ -8,17 +8,22 @@
     
     console.log('🔒 Website Protection System Loading...');
     
+    // Mobile Detection
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                     (typeof window.orientation !== "undefined") ||
+                     (navigator.maxTouchPoints > 1);
+    
     // Configuration - Use WordPress admin settings if available
     const defaultConfig = {
-        enableRightClickBlock: true,
-        enableDevToolsBlock: true,
-        enableKeyboardShortcuts: true,
-        enableContentProtection: true,
-        enableAdvancedProtection: true,
-        enableMobileProtection: true,
-        enablePrintProtection: true,
+        enableRightClickBlock: !isMobile, // Tắt trên mobile
+        enableDevToolsBlock: !isMobile,   // Tắt trên mobile  
+        enableKeyboardShortcuts: !isMobile, // Tắt trên mobile
+        enableContentProtection: !isMobile, // Tắt trên mobile
+        enableAdvancedProtection: !isMobile, // Tắt trên mobile
+        enableMobileProtection: false,    // Tắt hoàn toàn mobile protection
+        enablePrintProtection: !isMobile, // Tắt trên mobile
         enableDebugMode: false,
-        enableConsoleMessages: true,
+        enableConsoleMessages: !isMobile, // Tắt trên mobile
         warningMessage: '⚠️ CẢNH BÁO: Truy cập trái phép vào mã nguồn bị cấm!',
         redirectUrl: '' // Leave empty to just show alert
     };
@@ -31,6 +36,12 @@
     // Log current configuration in debug mode
     if (config.enableDebugMode) {
         console.log('🔧 Protection Configuration:', config);
+    }
+    
+    // Early exit for mobile devices
+    if (isMobile) {
+        console.log('📱 Mobile device detected - Protection system disabled');
+        return; // Thoát sớm, không chạy bất kỳ protection nào
     }
     
     // Debug logging
@@ -447,15 +458,30 @@
         if (!config.enableMobileProtection) return;
         
         // Disable long press context menu on mobile
+        let longPressTimer;
         document.addEventListener('touchstart', function(e) {
             if (e.touches.length > 1) {
                 e.preventDefault(); // Disable multi-touch
+                return;
             }
+            
+            // Set timer for long press detection
+            longPressTimer = setTimeout(function() {
+                e.preventDefault();
+                showProtectionAlert('🚫 Long press đã bị vô hiệu hóa!');
+            }, 800); // 800ms for long press
         });
         
         document.addEventListener('touchend', function(e) {
-            e.preventDefault();
-        }, { passive: false });
+            // Clear long press timer
+            clearTimeout(longPressTimer);
+            // Don't prevent touchend - allow normal taps
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            // Clear long press timer on move
+            clearTimeout(longPressTimer);
+        });
         
         // Disable mobile selection
         document.addEventListener('selectionchange', function() {
@@ -480,10 +506,19 @@
                 user-select: none !important;
             }
             
-            input, textarea {
+            /* Allow interaction for buttons and interactive elements */
+            button, a, input, textarea, select, [role="button"], .btn, [data-action], [onclick] {
                 -webkit-touch-callout: default !important;
                 -webkit-user-select: text !important;
                 user-select: text !important;
+                pointer-events: auto !important;
+                -webkit-tap-highlight-color: rgba(0,0,0,0.1) !important;
+            }
+            
+            /* Specifically for video controls and popup close buttons */
+            video, .video-controls, .close, .popup-close, [class*="close"], [class*="button"], [class*="btn"] {
+                pointer-events: auto !important;
+                -webkit-touch-callout: default !important;
             }
         `;
         document.head.appendChild(style);
@@ -540,6 +575,12 @@
     }
     
     function initProtection() {
+        // Skip protection on mobile devices
+        if (isMobile) {
+            console.log('📱 Mobile device - Skipping all protection systems');
+            return;
+        }
+        
         debugLog('Initializing protection systems...');
         
         try {
@@ -549,14 +590,14 @@
             protectConsole();
             monitorDevTools();
             advancedProtection();
-            mobileProtection();
+            // mobileProtection(); // Bỏ mobile protection
             printProtection();
             
             debugLog('All protection systems activated');
             
             // Show initialization message (only in debug mode)
             if (config.debugMode) {
-                console.log('%c🔒 Website Protection Active', 'color: green; font-size: 16px; font-weight: bold;');
+                console.log('%c🔒 Website Protection Active (Desktop Only)', 'color: green; font-size: 16px; font-weight: bold;');
             }
             
         } catch (error) {
@@ -568,6 +609,10 @@
     
     window.WebsiteProtection = {
         enable: function() {
+            if (isMobile) {
+                console.log('📱 Cannot enable protection on mobile device');
+                return;
+            }
             config.enableRightClickBlock = true;
             config.enableDevToolsBlock = true;
             config.enableKeyboardShortcuts = true;
@@ -580,6 +625,11 @@
             config.enableDevToolsBlock = false;
             config.enableKeyboardShortcuts = false;
             config.enableContentProtection = false;
+            console.log('🔓 Protection disabled');
+        },
+        
+        isMobile: function() {
+            return isMobile;
         },
         
         toggleDebug: function() {
@@ -589,11 +639,13 @@
         
         getStatus: function() {
             return {
+                isMobile: isMobile,
                 rightClick: config.enableRightClickBlock,
                 devTools: config.enableDevToolsBlock,
                 keyboard: config.enableKeyboardShortcuts,
                 content: config.enableContentProtection,
-                debug: config.debugMode
+                debug: config.debugMode,
+                active: !isMobile
             };
         }
     };
